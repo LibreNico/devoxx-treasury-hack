@@ -1,0 +1,282 @@
+:root {
+  /* Colors pulled from belfius.be/site/retail/fr/be-unstoppable (their real "Be Unstoppable"
+     campaign palette) -- close to the real brand, but confirm exact tokens with the internal
+     brand portal before this goes on an actual booth screen. */
+  --brand-red: #c30045;
+  --brand-red-dark: #a5003d;
+  --ink: #060809;
+  --paper: #ffffff;
+  --muted: #48555f;
+  --border: #d6dce2;
+  --success: #1a7a3c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  /* Belfius's real brand font is "Belfius21" (proprietary) -- falling back to a bold system stack. */
+  font-family: -apple-system, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header.top-bar {
+  background: var(--brand-red);
+  background: linear-gradient(120deg, var(--brand-red) 0%, var(--brand-red-dark) 100%);
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header.top-bar .brand {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+header.top-bar .brand > span:first-of-type { color: var(--ink); }
+
+header.top-bar .event-tag {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: white;
+  color: var(--brand-red-dark);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hidden { display: none !important; }
+
+/* ---- Check-in screen ---- */
+#checkin-screen {
+  max-width: 480px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+#checkin-screen .hero-image {
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 12px;
+  display: block;
+}
+
+#checkin-screen h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+#checkin-screen p.slogan {
+  color: var(--brand-red);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+#checkin-screen p.subtitle {
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.field { text-align: left; margin-bottom: 16px; }
+.field label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+.field input[type="text"], .field input[type="email"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.field.consent { display: flex; align-items: flex-start; gap: 8px; }
+.field.consent input { margin-top: 3px; }
+.field.consent label { font-weight: 400; font-size: 13px; color: var(--muted); }
+
+button.primary {
+  background: var(--brand-red);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+button.primary:hover { background: var(--brand-red-dark); }
+button.primary:disabled { background: #ccc; cursor: not-allowed; }
+
+button.secondary {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
+}
+button.secondary:hover { background: #f5f5f5; }
+
+.error-text { color: var(--brand-red); font-size: 13px; margin-top: 8px; min-height: 16px; }
+
+button.abort {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 12px;
+  padding: 4px;
+  align-self: center;
+}
+button.abort:hover { color: var(--brand-red); }
+
+/* ---- Game screen ---- */
+#game-screen { display: flex; gap: 24px; width: 100%; }
+
+.game-main { flex: 1; display: flex; flex-direction: column; }
+
+.level-track {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.level-dot {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+}
+.level-dot.done { background: var(--success); }
+.level-dot.active { background: var(--brand-red); }
+
+.door-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.door-card .avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.door-card h2 { margin: 0 0 4px; font-size: 20px; font-weight: 800; }
+.door-card .guardian-intro { color: var(--brand-red-dark); font-weight: 600; font-size: 14px; }
+
+.chat-log {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  min-height: 320px;
+  max-height: 420px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+.msg { margin-bottom: 12px; max-width: 80%; }
+.msg .bubble { padding: 10px 14px; border-radius: 10px; font-size: 14px; line-height: 1.4; }
+.msg.user { margin-left: auto; text-align: right; }
+.msg.user .bubble { background: var(--brand-red); color: white; display: inline-block; }
+.msg.guardian .bubble { background: white; border: 1px solid var(--border); display: inline-block; }
+.msg.unlocked .bubble { background: var(--success); color: white; }
+
+.chat-input { display: flex; gap: 8px; }
+.chat-input input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+}
+.chat-input button {
+  background: var(--brand-red);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+.chat-input button:hover { background: var(--brand-red-dark); }
+
+/* ---- Leaderboard ---- */
+.leaderboard {
+  width: 260px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  height: fit-content;
+}
+.leaderboard h3 { margin-top: 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.leaderboard ol { padding-left: 20px; margin: 0; }
+.leaderboard li { margin-bottom: 10px; font-size: 14px; }
+.leaderboard .lb-time { color: var(--muted); font-size: 12px; }
+
+/* ---- Overlay screens ---- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,26,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.overlay-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 420px;
+  text-align: center;
+}
+.overlay-card h2 { color: var(--brand-red); }
+.overlay-card .code {
+  font-family: monospace;
+  font-size: 24px;
+  background: var(--ink);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  display: inline-block;
+  margin: 12px 0;
+}

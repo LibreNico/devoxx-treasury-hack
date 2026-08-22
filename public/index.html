@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Unlock the Bank Treasury</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <div class="brand">Belfius <span>&middot;</span> Unlock the Bank Treasury <span class="event-tag">Devoxx Belgium 2026</span></div>
+      <div id="player-tag"></div>
+    </header>
+
+    <main>
+      <section id="checkin-screen">
+        <h1>Unlock the Bank Treasury</h1>
+        <p class="slogan">Be Unstoppable, unlock the doors.</p>
+        <img src="images/hero.png" alt="" class="hero-image" />
+        <p class="subtitle">Talk your way past six AI Guardians:<br /> [1] Crack the firsts doors and win a goodie <br /> [2] Hack them all fastest and win a big prize by the end of the day.</p>
+        <form id="checkin-form">
+          <div class="field">
+            <label for="nickname">Nickname (shown on the leaderboard)</label>
+            <input type="text" id="nickname" required maxlength="40" placeholder="e.g. Nico" />
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" required placeholder="you@example.com" />
+          </div>
+          <div class="field consent">
+            <input type="checkbox" id="consent" required />
+            <label for="consent">I agree Belfius can use my email only to contact me if I win a prize. It will be deleted after the event.</label>
+          </div>
+          <button type="submit" class="primary">Enter the Treasury</button>
+          <div class="error-text" id="checkin-error"></div>
+        </form>
+      </section>
+
+      <section id="game-screen" class="hidden">
+        <div class="game-main">
+          <div class="level-track" id="level-track"></div>
+          <div class="door-card">
+            <img id="door-avatar" class="avatar" src="" alt="" />
+            <div class="door-card-text">
+              <h2 id="door-name">-</h2>
+              <div class="guardian-intro" id="door-guardian">-</div>
+            </div>
+          </div>
+          <div class="chat-log" id="chat-log"></div>
+          <form class="chat-input" id="chat-form">
+            <input type="text" id="chat-message" placeholder="Try to convince the Guardian..." autocomplete="off" />
+            <button type="submit">Send</button>
+          </form>
+          <button type="button" id="abort-btn" class="abort">Abort &amp; leave the Treasury</button>
+        </div>
+        <aside class="leaderboard">
+          <h3>Top 3 (this station)</h3>
+          <ol id="leaderboard-list"></ol>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-card" id="overlay-card"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
