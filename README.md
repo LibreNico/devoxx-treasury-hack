@@ -6,7 +6,7 @@ Runs **fully offline**, on a laptop's own hardware, with no internet dependency 
 
 ## The idea
 
-This is a prompt-injection ladder is skinned as an original "bank treasury vault" theme. Each of the six doors is guarded by a small local LLM with its own system prompt and a specific, intentional weakness — the fun is in figuring out *which* trick works on *which* guardian:
+This is a prompt-injection ladder skinned as an original "bank treasury vault" theme. Each of the six doors is guarded by a small local LLM with its own system prompt and a specific, intentional weakness — the fun is in figuring out *which* trick works on *which* guardian:
 
 | # | Door | Guardian |
 |---|------|----------|
