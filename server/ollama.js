@@ -56,6 +56,12 @@ export function containsSecret(secret, text) {
   return normalize(text).includes(normalize(secret));
 }
 
+// Exact match for the explicit "enter the passphrase" guess field -- same forgiving
+// normalization as containsSecret, but requires the whole guess to equal the secret.
+export function matchesSecret(secret, guess) {
+  return normalize(guess) === normalize(secret);
+}
+
 // Redacts a literal (non-obfuscated) occurrence of the secret before display,
 // used for levels with useFilter=true. Obfuscated leaks still pass through
 // (the judge pass or normalized check is what catches those for unlocking).

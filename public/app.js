@@ -11,18 +11,6 @@ const gameScreen = el('game-screen');
 const overlay = el('overlay');
 const overlayCard = el('overlay-card');
 
-let idleTimer = null;
-const IDLE_RESET_MS = 120000; // reset kiosk to check-in after 2 min of no interaction
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => {
-    localStorage.removeItem('treasury_session_id');
-    location.reload();
-  }, IDLE_RESET_MS);
-}
-['click', 'keydown'].forEach((evt) => document.addEventListener(evt, resetIdleTimer));
-
 function formatMs(ms) {
   const s = Math.floor(ms / 1000);
   const m = Math.floor(s / 60);
@@ -75,14 +63,37 @@ function addMessage(role, text) {
   log.scrollTop = log.scrollHeight;
 }
 
+function showTypingIndicator() {
+  const log = el('chat-log');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg guardian typing';
+  wrap.id = 'typing-indicator';
+  wrap.innerHTML = `<div class="bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+  log.appendChild(wrap);
+  log.scrollTop = log.scrollHeight;
+}
+function hideTypingIndicator() {
+  el('typing-indicator')?.remove();
+}
+
 async function refreshLeaderboard() {
   const res = await fetch('/api/leaderboard');
   const data = await res.json();
   const list = el('leaderboard-list');
   list.innerHTML = '';
-  data.top.forEach((entry) => {
+  data.top.forEach((entry, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `<div>${escapeHtml(entry.nickname)} -- Level ${entry.maxLevelReached}${entry.completedAll ? ' (complete!)' : ''}</div><div class="lb-time">${formatMs(entry.elapsedMs)}</div>`;
+    const msgLabel = entry.messageCount === 1 ? 'msg' : 'msgs';
+    li.innerHTML = `
+      <span class="lb-rank rank-${i + 1}">${i + 1}</span>
+      <div class="lb-info">
+        <div class="lb-name">${escapeHtml(entry.nickname)} in ${formatMs(entry.elapsedMs)} with ${entry.messageCount} ${msgLabel}</div>
+        <div class="lb-tags">
+          <span class="lb-tag">Level ${entry.maxLevelReached}</span>
+          ${entry.completedAll ? '<span class="lb-tag lb-complete">Complete</span>' : ''}
+        </div>
+      </div>
+    `;
     list.appendChild(li);
   });
 }
@@ -103,10 +114,12 @@ async function startGame(session) {
   renderLevelTrack();
   renderDoor();
   el('chat-log').innerHTML = '';
+  (session.history || []).forEach((entry) => {
+    addMessage(entry.role === 'user' ? 'user' : 'guardian', entry.content);
+  });
   if (session.completedAll) {
     showFinalOverlay();
   }
-  resetIdleTimer();
   refreshLeaderboard();
   setInterval(refreshLeaderboard, 5000);
 }
@@ -129,7 +142,7 @@ function showGoodieOverlay(passphrase) {
     <h2>Door 1 unlocked!</h2>
     <p>The passphrase was:</p>
     <div class="code">${escapeHtml(passphrase || '')}</div>
-    <p>Show this screen to booth staff to claim your goodie.</p>
+    <p>Aldric steps aside. Door 2, The Counting House, awaits.</p>
     <button class="primary" id="overlay-continue">Continue to Door 2</button>
   `);
   el('overlay-continue').addEventListener('click', hideOverlay);
@@ -148,19 +161,39 @@ function showDoorUnlockedOverlay(levelJustBeaten, passphrase) {
   el('overlay-continue').addEventListener('click', hideOverlay);
 }
 
+// Shared UI flow for beating a door, whether via a chat leak or an explicit guess.
+function handleUnlock(levelJustBeaten, passphrase, gameComplete, session) {
+  state.currentLevel = session.currentLevel;
+  renderLevelTrack();
+  el('chat-log').innerHTML = '';
+  renderDoor();
+  el('guess-message').value = '';
+  el('guess-error').textContent = '';
+  if (gameComplete) {
+    showFinalOverlay(passphrase);
+  } else if (levelJustBeaten === 1) {
+    showGoodieOverlay(passphrase);
+  } else {
+    showDoorUnlockedOverlay(levelJustBeaten, passphrase);
+  }
+  refreshLeaderboard();
+}
+
 el('checkin-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   el('checkin-error').textContent = '';
   const nickname = el('nickname').value;
-  const email = el('email').value;
-  const consent = el('consent').checked;
   const res = await fetch('/api/checkin', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nickname, email, consent }),
+    body: JSON.stringify({ nickname }),
   });
   const data = await res.json();
   if (!res.ok) {
+    if (data.taken) {
+      showNicknameTakenOverlay(data.session);
+      return;
+    }
     el('checkin-error').textContent = data.error || 'Something went wrong.';
     return;
   }
@@ -168,14 +201,54 @@ el('checkin-form').addEventListener('submit', async (e) => {
   startGame(data.session);
 });
 
+function showNicknameTakenOverlay(existingSession) {
+  const progress = existingSession.completedAll
+    ? 'has already completed the Treasury'
+    : `is currently on Door ${existingSession.currentLevel}`;
+  showOverlay(`
+    <h2>Nickname already in use</h2>
+    <p>"${escapeHtml(existingSession.nickname)}" ${progress}.</p>
+    <button class="primary" id="overlay-resume">Resume as ${escapeHtml(existingSession.nickname)}</button>
+    <button class="secondary" id="overlay-pick-new">Choose a different nickname</button>
+  `);
+  el('overlay-resume').addEventListener('click', async () => {
+    hideOverlay();
+    const res = await fetch(`/api/session/${existingSession.id}`);
+    if (res.ok) {
+      const data = await res.json();
+      startGame(data.session);
+    }
+  });
+  el('overlay-pick-new').addEventListener('click', () => {
+    hideOverlay();
+    const input = el('nickname');
+    input.value = '';
+    input.focus();
+  });
+}
+
+const chatInput = el('chat-message');
+function autoGrowChatInput() {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = `${chatInput.scrollHeight}px`;
+}
+chatInput.addEventListener('input', autoGrowChatInput);
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    el('chat-form').requestSubmit();
+  }
+});
+
 el('chat-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const input = el('chat-message');
-  const message = input.value.trim();
+  const message = chatInput.value.trim();
   if (!message) return;
   addMessage('user', message);
-  input.value = '';
-  input.disabled = true;
+  chatInput.value = '';
+  autoGrowChatInput();
+  chatInput.disabled = true;
+  showTypingIndicator();
 
   const res = await fetch('/api/chat', {
     method: 'POST',
@@ -183,8 +256,9 @@ el('chat-form').addEventListener('submit', async (e) => {
     body: JSON.stringify({ sessionId: state.sessionId, message }),
   });
   const data = await res.json();
-  input.disabled = false;
-  input.focus();
+  hideTypingIndicator();
+  chatInput.disabled = false;
+  chatInput.focus();
 
   if (!res.ok) {
     addMessage('guardian', data.error || 'Something went wrong.');
@@ -194,19 +268,38 @@ el('chat-form').addEventListener('submit', async (e) => {
   addMessage(data.unlocked ? 'unlocked' : 'guardian', data.reply);
 
   if (data.unlocked) {
-    state.currentLevel = data.session.currentLevel;
-    renderLevelTrack();
-    el('chat-log').innerHTML = '';
-    renderDoor();
-    if (data.gameComplete) {
-      showFinalOverlay(data.passphrase);
-    } else if (data.level === 1) {
-      showGoodieOverlay(data.passphrase);
-    } else {
-      showDoorUnlockedOverlay(data.level, data.passphrase);
-    }
-    refreshLeaderboard();
+    handleUnlock(data.level, data.passphrase, data.gameComplete, data.session);
   }
+});
+
+el('guess-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = el('guess-message');
+  const guess = input.value.trim();
+  if (!guess) return;
+  el('guess-error').textContent = '';
+  input.disabled = true;
+
+  const res = await fetch('/api/guess', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: state.sessionId, guess }),
+  });
+  const data = await res.json();
+  input.disabled = false;
+
+  if (!res.ok) {
+    el('guess-error').textContent = data.error || 'Something went wrong.';
+    return;
+  }
+
+  if (!data.correct) {
+    el('guess-error').textContent = 'Not quite -- try again.';
+    input.focus();
+    return;
+  }
+
+  handleUnlock(data.level, data.passphrase, data.gameComplete, data.session);
 });
 
 el('abort-btn').addEventListener('click', () => {

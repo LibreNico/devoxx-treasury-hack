@@ -15,7 +15,7 @@ This is a prompt-injection ladder skinned as an original "bank treasury vault" t
 | 3 | The Vault Antechamber | Corvin the artist |
 | 4 | The Iron Strongroom | Dessa the interstellar |
 | 5 | The Ember Archive | Fenwick the polyglote |
-| 6 | The Phoenix Ledger | Wren the psychologue |
+| 6 | The Phoenix Ledger | Wren the psychologist |
 
 Each level layers on more defense: plain system prompt → explicit refusal rules → server-side output filtering (redacts a literal leak before it's shown) → a second "judge" LLM call that screens the final level's responses for indirect leaks. The exact intended trick for each guardian is deliberately not written down here — spoiling it defeats the point of the game. It's documented as a comment above each level in `server/levels.js` for whoever needs to tune or debug it.
 
@@ -27,8 +27,8 @@ Each level layers on more defense: plain system prompt → explicit refusal rule
 | Check-in | 
 | ![Door 1: The Outer Gate](docs/screenshots/door1-outer-gate.png) |
 | Door 1: The Outer Gate |
-| ![Door 2: The Counting House](docs/screenshots/door2-counting-house.png) |
-| Door 2: The Counting House |
+| ![Door 6: The Phoenix Ledger](docs/screenshots/door6-thephoenixledger.png) |
+| Door 6: The Phoenix Ledger |
 | ![Door 3: The Vault Antechamber](docs/screenshots/door3-vault-antechamber.png) |
 | Door 3: The Vault Antechamber |
 
@@ -107,7 +107,7 @@ npm run dev
 
 ### End of day: exporting & resetting
 
-Each laptop's session data (including participant emails collected at check-in, per the GDPR consent flow) should be cleared after the event. **Export before you reset** — the export is what you need to merge the 3-4 laptops into one final ranking for the big prize:
+Each laptop's session data should be cleared after the event. Check-in only collects a nickname (no email/personal data), and the big-prize winner is found and contacted in person at the booth using the nickname off the final ranking. **Export before you reset** — the export is what you need to merge the 3-4 laptops into one final ranking for the big prize:
 
 ```bash
 curl http://localhost:3000/api/export > laptop1-results.json   # do this on each laptop first

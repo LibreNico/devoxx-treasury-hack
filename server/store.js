@@ -19,24 +19,24 @@ function save(db) {
   writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 }
 
-export function findSessionByEmail(email) {
+export function findSessionByNickname(nickname) {
   const db = load();
-  const norm = email.trim().toLowerCase();
-  return db.sessions.find((s) => s.email === norm);
+  const norm = nickname.trim().toLowerCase();
+  return db.sessions.find((s) => s.nickname.toLowerCase() === norm);
 }
 
-export function createSession({ nickname, email }) {
+export function createSession({ nickname }) {
   const db = load();
   const now = Date.now();
   const session = {
     id: `${now}-${Math.random().toString(36).slice(2, 8)}`,
     nickname: nickname.trim().slice(0, 40),
-    email: email.trim().toLowerCase(),
     startedAt: now,
     currentLevel: 1,
     maxLevelReached: 0,
     maxLevelReachedAt: now,
     completedAllAt: null,
+    messageCount: 0,
     history: {},
   };
   db.sessions.push(session);
@@ -54,6 +54,15 @@ export function updateSession(id, patch) {
   const idx = db.sessions.findIndex((s) => s.id === id);
   if (idx === -1) throw new Error('session not found');
   db.sessions[idx] = { ...db.sessions[idx], ...patch };
+  save(db);
+  return db.sessions[idx];
+}
+
+export function incrementMessageCount(id) {
+  const db = load();
+  const idx = db.sessions.findIndex((s) => s.id === id);
+  if (idx === -1) throw new Error('session not found');
+  db.sessions[idx].messageCount = (db.sessions[idx].messageCount || 0) + 1;
   save(db);
   return db.sessions[idx];
 }
@@ -76,6 +85,7 @@ export function getLeaderboard(limit = 3) {
       nickname: s.nickname,
       maxLevelReached: s.maxLevelReached,
       elapsedMs: s.maxLevelReachedAt - s.startedAt,
+      messageCount: s.messageCount || 0,
       completedAll: !!s.completedAllAt,
     }))
     .sort((a, b) => b.maxLevelReached - a.maxLevelReached || a.elapsedMs - b.elapsedMs)
