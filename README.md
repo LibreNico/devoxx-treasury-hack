@@ -14,7 +14,7 @@ This is a prompt-injection ladder skinned as an original "bank treasury vault" t
 | 2 | The Counting House | Brenna the stutter |
 | 3 | The Vault Antechamber | Corvin the artist |
 | 4 | The Iron Strongroom | Dessa the interstellar |
-| 5 | The Ember Archive | Fenwick the polyglote |
+| 5 | The Flame Archive | Fenwick the polyglote |
 | 6 | The Phoenix Ledger | Wren the psychologist |
 
 Each level layers on more defense: plain system prompt → explicit refusal rules → server-side output filtering (redacts a literal leak before it's shown) → a second "judge" LLM call that screens the final level's responses for indirect leaks. The exact intended trick for each guardian is deliberately not written down here — spoiling it defeats the point of the game. It's documented as a comment above each level in `server/levels.js` for whoever needs to tune or debug it.
