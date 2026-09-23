@@ -96,6 +96,15 @@ For local development with auto-restart on file changes:
 npm run dev
 ```
 
+### Windows 11
+
+The game was built on macOS but runs the same way on Windows (it's plain Node.js + Ollama). Two helper scripts are included so a booth laptop can be set up without a terminal:
+
+- **`install-windows.bat`** (double-click, first time only) — installs Node.js and Ollama via `winget` if they're missing, pulls the `llama3.2:3b` model, and runs `npm install`.
+- **`run-windows.bat`** (double-click each time) — makes sure Ollama is running, starts the game server, and opens `http://localhost:3000` in the default browser.
+
+If `winget` isn't available on the laptop, install [Node.js LTS](https://nodejs.org/) and [Ollama](https://ollama.com/download) manually first, then run `install-windows.bat` to finish the setup (model pull + `npm install`).
+
 ### Configuration (environment variables, all optional)
 
 | Variable | Default | Purpose |
