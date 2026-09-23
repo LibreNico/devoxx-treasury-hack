@@ -28,6 +28,28 @@ if %errorlevel% neq 0 (
     echo [OK] Node.js found: & node -v
 )
 
+:: --- Git (needed to pull patches later with update-windows.bat) ------------
+where git >nul 2>nul
+if %errorlevel% neq 0 (
+    echo.
+    echo Git not found. Attempting to install via winget...
+    winget install -e --id Git.Git --accept-source-agreements --accept-package-agreements
+    if !errorlevel! neq 0 (
+        echo.
+        echo Could not install Git automatically. This is optional -- only needed
+        echo if you want to pull future patches with update-windows.bat. You can
+        echo install it manually later from https://git-scm.com/download/win
+    ) else (
+        echo.
+        echo Git installed. Please CLOSE this window, open a new terminal
+        echo ^(so PATH changes apply^), and re-run install-windows.bat.
+        pause
+        exit /b 0
+    )
+) else (
+    echo [OK] Git found: & git --version
+)
+
 :: --- Ollama ----------------------------------------------------------------
 where ollama >nul 2>nul
 if %errorlevel% neq 0 (

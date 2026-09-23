@@ -399,6 +399,28 @@ button.abort:hover {
   color: white;
 }
 
+/* ---- Shorter screens (e.g. 1366x768 booth laptops) ----
+   Without this, the game screen's fixed paddings/min-heights add up to more
+   than the viewport height and the whole page scrolls, which shows as a
+   stray scrollbar even in fullscreen/kiosk mode. */
+@media (max-height: 800px) {
+  header.top-bar { padding: 10px 24px; }
+  main { padding: 14px 24px; gap: 16px; }
+
+  #checkin-screen { margin: 16px auto; }
+  #checkin-screen .hero-image { max-width: 110px; margin-bottom: 8px; }
+  #checkin-screen h1 { font-size: 26px; }
+  .goals { margin-bottom: 16px; }
+
+  .level-track { margin-bottom: 10px; }
+  .door-card { padding: 12px; margin-bottom: 10px; }
+  .door-card .avatar { width: 48px; height: 48px; }
+  .chat-log { min-height: 180px; max-height: 260px; margin-bottom: 8px; }
+  .chat-input { margin-bottom: 6px; }
+  .guess-input { margin-top: 4px; }
+  button.abort { margin-top: 6px; padding: 8px 18px; }
+}
+
 /* ---- Overlay screens ---- */
 .overlay {
   position: fixed;
