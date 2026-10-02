@@ -82,6 +82,12 @@ Then pull the model the game uses by default:
 ollama pull llama3.2:3b
 ```
 
+If you'll also run the `/freechat.html` live-demo page (see [Live-talk extra](#live-talk-extra-ai-red-team-playground)), pull its second model too:
+
+```bash
+ollama pull mistral
+```
+
 Check it's running:
 
 ```bash
@@ -109,7 +115,7 @@ npm run dev
 
 The game was built on macOS but runs the same way on Windows (it's plain Node.js + Ollama). A few helper scripts are included so a booth laptop can be set up and run without a terminal:
 
-- **`install-windows.bat`** (double-click, first time only) — installs Node.js, Git, and Ollama via `winget` if they're missing, pulls the `llama3.2:3b` model, and runs `npm install`. Git is installed so `update-windows.bat` can pull patches during the event.
+- **`install-windows.bat`** (double-click, first time only) — installs Node.js, Git, and Ollama via `winget` if they're missing, pulls the `llama3.2:3b` and `mistral` models, and runs `npm install`. Git is installed so `update-windows.bat` can pull patches during the event.
 - **`run-windows.bat`** (double-click each time) — makes sure Ollama is running, starts the game server, and opens `http://localhost:3000` in the default browser.
 - **`update-windows.bat`** (double-click, whenever there's a patch) — `git pull`s the latest changes and re-runs `npm install`. Refuses to run if the laptop has local edits, so it never clobbers something someone changed on-site.
 - **`reset-db-windows.bat`** (double-click, end of day) — same end-of-day wipe as `npm run reset-db`, with a typed `YES` confirmation and a reminder to export first (see [End of day](#end-of-day-exporting--resetting)).

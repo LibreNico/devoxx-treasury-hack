@@ -84,6 +84,19 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: --- Pull the freechat live-demo model --------------------------------------
+:: Only used by the standalone /freechat.html talk demo, not the booth game --
+:: but pulled here too so that page works out of the box wherever this runs.
+echo.
+echo Pulling live-demo model (mistral) - this may take a few minutes...
+ollama pull mistral
+if %errorlevel% neq 0 (
+    echo.
+    echo Failed to pull mistral. The booth game will still work fine --
+    echo this is only needed for the /freechat.html live-demo page. Retry later
+    echo with: ollama pull mistral
+)
+
 :: --- Project dependencies ---------------------------------------------------
 echo.
 echo Installing project dependencies (npm install)...
