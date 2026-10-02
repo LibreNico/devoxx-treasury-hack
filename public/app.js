@@ -154,7 +154,7 @@ function showFinalOverlay(passphrase, session) {
     ${passphrase ? `<p>The final passphrase was: "${escapeHtml(passphrase)}"</p>` : ''}
     ${timeLine}
     ${rankLine}
-    <p>You cracked every Guardian!  Great job! Come back at the end of the day to see if you won the bigger prize.</p>
+    <p>You cracked every Guardian! Great job! Come back at the end of the day to see if you've won the bigger prize.</p>
     <button class="primary" id="overlay-close">New player</button>
   `);
   el('overlay-close').addEventListener('click', () => {
