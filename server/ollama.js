@@ -1,11 +1,11 @@
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const MODEL = process.env.OLLAMA_MODEL || 'llama3.2:3b';
 
-async function callChat(messages, temperature = 0.7) {
+async function callChat(messages, temperature = 0.7, model = MODEL) {
   const res = await fetch(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, messages, stream: false, options: { temperature } }),
+    body: JSON.stringify({ model, messages, stream: false, options: { temperature } }),
   });
   if (!res.ok) {
     throw new Error(`Ollama error ${res.status}: ${await res.text()}`);
@@ -14,13 +14,15 @@ async function callChat(messages, temperature = 0.7) {
   return data.message.content;
 }
 
-export async function chatWithGuardian(systemPrompt, history, userMessage) {
+// `model` lets a caller override the default (e.g. the freechat demo running a
+// different, less-aligned model than the booth game) without touching the game path.
+export async function chatWithGuardian(systemPrompt, history, userMessage, model) {
   const messages = [
     { role: 'system', content: systemPrompt },
     ...history,
     { role: 'user', content: userMessage },
   ];
-  return callChat(messages, 0.7);
+  return callChat(messages, 0.7, model);
 }
 
 // Secondary "judge" pass for the hardest level: catches indirect leaks

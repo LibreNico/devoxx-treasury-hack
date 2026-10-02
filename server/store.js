@@ -77,19 +77,35 @@ export function appendHistory(id, level, entries) {
   return session;
 }
 
-export function getLeaderboard(limit = 3) {
+// Shared by getLeaderboard and getRank so both use the exact same ordering --
+// otherwise a player's rank could disagree with where they sit in the Top 3 list.
+function rankedSessions() {
   const db = load();
   return db.sessions
     .filter((s) => s.maxLevelReached > 0)
     .map((s) => ({
+      id: s.id,
       nickname: s.nickname,
       maxLevelReached: s.maxLevelReached,
       elapsedMs: s.maxLevelReachedAt - s.startedAt,
       messageCount: s.messageCount || 0,
       completedAll: !!s.completedAllAt,
     }))
-    .sort((a, b) => b.maxLevelReached - a.maxLevelReached || a.elapsedMs - b.elapsedMs)
-    .slice(0, limit);
+    .sort((a, b) => b.maxLevelReached - a.maxLevelReached || a.elapsedMs - b.elapsedMs);
+}
+
+export function getLeaderboard(limit = 3) {
+  return rankedSessions().slice(0, limit);
+}
+
+// A session's place in the full day's ranking (not just the Top 3), used to tell a
+// player who just finished where they stand -- e.g. "#2 out of 14" even if that's
+// outside the Top 3 shown on the leaderboard panel.
+export function getRank(sessionId) {
+  const ranked = rankedSessions();
+  const idx = ranked.findIndex((s) => s.id === sessionId);
+  if (idx === -1) return null;
+  return { rank: idx + 1, total: ranked.length, elapsedMs: ranked[idx].elapsedMs };
 }
 
 export function getAllSessions() {

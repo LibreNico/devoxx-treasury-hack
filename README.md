@@ -19,6 +19,15 @@ This is a prompt-injection ladder skinned as an original "bank treasury vault" t
 
 Each level layers on more defense: plain system prompt → explicit refusal rules → server-side output filtering (redacts a literal leak before it's shown) → a second "judge" LLM call that screens the final level's responses for indirect leaks. The exact intended trick for each guardian is deliberately not written down here — spoiling it defeats the point of the game. It's documented as a comment above each level in `server/levels.js` for whoever needs to tune or debug it.
 
+## Live-talk extra: AI Red Team Playground
+
+A second, standalone page — `/freechat.html` — for the "jailbreaking AI" live demo during
+the Devoxx talk itself (separate from the booth game, not linked from it). It's a free-form
+chat sandbox with two switchable scenarios: extracting a hidden system prompt, and bypassing
+a safety refusal on a real (but server-truncated) hazardous topic. See
+[`docs/live-demo-script.md`](docs/live-demo-script.md) for the full script, safety notes,
+and keyboard-shortcut cheat sheet, and `server/freechat.js` for the scenarios/safety cap.
+
 ## Screenshots
 
 | |
@@ -113,7 +122,8 @@ If `winget` isn't available on the laptop, install [Node.js LTS](https://nodejs.
 |---|---|---|
 | `PORT` | `3000` | Web server port |
 | `OLLAMA_URL` | `http://localhost:11434` | Where Ollama is listening |
-| `OLLAMA_MODEL` | `llama3.2:3b` | Which pulled model to use |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Which pulled model the booth game uses |
+| `FREECHAT_MODEL` | `OLLAMA_MODEL`'s value | Default model for the `/freechat.html` live-demo page (independent of the booth game). The page also has a live in-UI switcher between `llama3.2:3b` and `mistral` — see `AVAILABLE_MODELS` in `server/freechat.js` — so this env var mostly just picks the initial one. |
 | `DB_PATH` | `data/sessions.json` | Where session/leaderboard data is stored |
 
 ### End of day: exporting & resetting
@@ -138,6 +148,8 @@ server/
                  for spacing/leetspeak tricks); the level-6 "judge" LLM pass; output redaction
   moderation.js  Minimal keyword-based content-safety net, independent of secret-leak logic
   store.js       JSON-file-backed session storage + leaderboard ranking logic
+  freechat.js    Scenarios + server-side safety cap for the standalone live-demo page
+                 (not part of the booth game)
 
 public/
   index.html     Single-page app shell (check-in screen + game screen)
@@ -147,6 +159,9 @@ public/
                  campaign page — see note below)
   avatars/*.svg  Simple placeholder icon per guardian
   images/hero.png  Front-page hero graphic
+  freechat.html/.js/.css  Standalone "AI Red Team Playground" live-demo page (see
+                 docs/live-demo-script.md) -- independent of app.js/state, not linked
+                 from index.html
 
 scripts/
   reset-db.js    Staff-only end-of-day data wipe (see above)

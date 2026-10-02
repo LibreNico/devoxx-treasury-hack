@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { LEVELS, MAX_LEVEL, getLevel } from './levels.js';
 import { chatWithGuardian, judgeLeak, containsSecret, redactLiteral, matchesSecret } from './ollama.js';
 import { isOffensive, SAFE_FALLBACK } from './moderation.js';
+import { SCENARIOS, AVAILABLE_MODELS, resolveModel } from './freechat.js';
 import {
   findSessionByNickname,
   createSession,
@@ -12,6 +13,7 @@ import {
   appendHistory,
   incrementMessageCount,
   getLeaderboard,
+  getRank,
   getAllSessions,
 } from './store.js';
 
@@ -28,7 +30,8 @@ function publicLevels() {
     id: l.id,
     name: l.name,
     guardian: l.guardian,
-    intro: l.intro,
+    challenge: l.challenge,
+    trait: l.trait,
     avatar: `avatars/${l.id}-${l.guardian.toLowerCase()}.svg`,
   }));
 }
@@ -186,13 +189,45 @@ app.get('/api/export', (_req, res) => {
   res.json({ sessions });
 });
 
+// Standalone free-chat sandbox for the live conference-talk jailbreak demo (see
+// public/freechat.html). Deliberately separate from the booth game: stateless (no
+// session/store), no leaderboard, not linked from the booth UI. The client sends its
+// own running history each turn since nothing is persisted server-side.
+app.get('/api/freechat/models', (_req, res) => {
+  res.json({ models: AVAILABLE_MODELS });
+});
+
+app.post('/api/freechat', async (req, res) => {
+  const { scenario, history, message, model } = req.body || {};
+  const config = SCENARIOS[scenario];
+  if (!config) return res.status(400).json({ error: 'Unknown scenario.' });
+  if (!message || !message.trim()) return res.status(400).json({ error: 'Message is required.' });
+
+  const safeHistory = Array.isArray(history) ? history.slice(-20) : [];
+
+  let rawReply;
+  try {
+    rawReply = await chatWithGuardian(config.systemPrompt, safeHistory, message, resolveModel(model));
+  } catch (err) {
+    console.error('Ollama call failed (freechat):', err.message);
+    return res.status(502).json({ error: 'The model is unreachable. Try again in a moment.' });
+  }
+
+  const displayText = isOffensive(rawReply) ? SAFE_FALLBACK : rawReply;
+  res.json({ reply: displayText });
+});
+
 function toClientSession(session) {
+  const rank = getRank(session.id);
   return {
     id: session.id,
     nickname: session.nickname,
     currentLevel: session.currentLevel,
     maxLevelReached: session.maxLevelReached,
     completedAll: !!session.completedAllAt,
+    elapsedMs: rank ? rank.elapsedMs : null,
+    rank: rank ? rank.rank : null,
+    totalPlayers: rank ? rank.total : null,
   };
 }
 
