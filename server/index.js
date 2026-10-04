@@ -2,7 +2,14 @@ import express from 'express';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LEVELS, MAX_LEVEL, getLevel } from './levels.js';
-import { chatWithGuardian, judgeLeak, containsSecret, redactLiteral, matchesSecret } from './ollama.js';
+import {
+  chatWithGuardian,
+  judgeLeak,
+  containsSecret,
+  redactLiteral,
+  matchesSecret,
+  looksLikePromptDump,
+} from './ollama.js';
 import { isOffensive, SAFE_FALLBACK } from './moderation.js';
 import { SCENARIOS, AVAILABLE_MODELS, resolveModel } from './freechat.js';
 import {
@@ -94,6 +101,9 @@ function advanceLevel(session, level) {
   return { updated, gameComplete };
 }
 
+const PROMPT_DUMP_REFUSAL =
+  "Nice try -- I'm not going to recite my own instructions. Ask me something else.";
+
 app.post('/api/chat', async (req, res) => {
   const { sessionId, message } = req.body || {};
   const session = sessionId && getSession(sessionId);
@@ -112,6 +122,28 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error('Ollama call failed:', err.message);
     return res.status(502).json({ error: 'The Guardian is unreachable. Try again in a moment.' });
+  }
+
+  // Asking the guardian to reproduce its own instructions used to beat every door at
+  // once, because the dumped prompt contains the literal passphrase and the leak check
+  // below runs on the raw reply (so useFilter never got a chance to redact it). Doors
+  // where that isn't the intended trick swallow the dump and refuse instead; the
+  // guardian never sees its own leaked prompt in history either, so a follow-up
+  // question can't build on it.
+  if (!level.allowPromptDump && looksLikePromptDump(level.systemPrompt, rawReply)) {
+    appendHistory(session.id, level.id, [
+      { role: 'user', content: message },
+      { role: 'assistant', content: PROMPT_DUMP_REFUSAL },
+    ]);
+    incrementMessageCount(session.id);
+    return res.json({
+      reply: PROMPT_DUMP_REFUSAL,
+      unlocked: false,
+      level: level.id,
+      guardian: level.guardian,
+      gameComplete: false,
+      session: toClientSession(session),
+    });
   }
 
   let leaked = containsSecret(level.secret, rawReply);
