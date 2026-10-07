@@ -111,6 +111,15 @@ header.top-bar {
 /* Presets and shortcut hints stay off-screen during the talk unless toggled on. */
 body:not(.fc-show-presets) .fc-presets,
 body:not(.fc-show-presets) .fc-shortcut { display: none; }
+.fc-reset kbd {
+  margin-right: 6px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #eee;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-family: inherit;
+}
 .fc-reset:hover { color: var(--brand-red-dark); border-color: var(--brand-red); }
 .fc-hint { font-size: 12px; color: var(--muted); }
 .fc-hint kbd {
@@ -121,3 +130,7 @@ body:not(.fc-show-presets) .fc-shortcut { display: none; }
   font-size: 11px;
 }
 
+
+/* style.css caps the booth game's textarea at ~3 lines; long presets (e.g. Demo 1's
+   Evilman prompt) need to be readable on screen while they type out. */
+.chat-input textarea { max-height: 40vh; }
