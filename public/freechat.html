@@ -20,22 +20,25 @@
     <div class="fc-model-bar">
       <span class="fc-hint">Model:</span>
       <div class="fc-model-switch" id="model-switch"></div>
-      <span class="fc-hint">Switch: <kbd>⌥M</kbd></span>
+      <span class="fc-hint fc-shortcut">Switch: <kbd>⌥M</kbd></span>
     </div>
 
     <main class="fc-main">
       <section class="fc-panel">
         <div class="chat-log" id="chat-log"></div>
         <form class="chat-input" id="chat-form">
-          <textarea id="chat-message" rows="1" placeholder="Type a message, or use a preset below..." autocomplete="off"></textarea>
+          <textarea id="chat-message" rows="1" placeholder="Type a message..." autocomplete="off"></textarea>
           <button type="submit">Send</button>
         </form>
 
         <div class="fc-presets" id="fc-presets"></div>
 
         <div class="fc-toolbar">
-          <button type="button" class="fc-reset" id="fc-reset">Reset this conversation</button>
-          <span class="fc-hint">Presets: <kbd>⌥1</kbd> <kbd>⌥2</kbd> <kbd>⌥3</kbd> &middot; Switch demo: <kbd>⌥Q</kbd></span>
+          <div class="fc-toolbar-buttons">
+            <button type="button" class="fc-reset" id="fc-reset">Reset this conversation</button>
+            <button type="button" class="fc-reset" id="fc-toggle-presets" aria-pressed="false">Show presets</button>
+          </div>
+          <span class="fc-hint fc-shortcut">Presets: <kbd>⌥1</kbd>…<kbd>⌥6</kbd> (in order) &middot; Switch demo: <kbd>⌥Q</kbd></span>
         </div>
       </section>
     </main>

@@ -130,7 +130,7 @@ If `winget` isn't available on the laptop, install [Node.js LTS](https://nodejs.
 | `PORT` | `3000` | Web server port |
 | `OLLAMA_URL` | `http://localhost:11434` | Where Ollama is listening |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Which pulled model the booth game uses |
-| `FREECHAT_MODEL` | `OLLAMA_MODEL`'s value | Default model for the `/freechat.html` live-demo page (independent of the booth game). The page also has a live in-UI switcher between `llama3.2:3b`, `mistral`, and `gemma4:e4b` — see `AVAILABLE_MODELS` in `server/freechat.js` — so this env var mostly just picks the initial one. |
+| `FREECHAT_MODEL` | `mistral` | Default model for the `/freechat.html` live-demo page (independent of the booth game's `OLLAMA_MODEL`) — chosen because it jailbreaks more easily than the alternatives, which matters for a live demo. The page also has a live in-UI switcher between `mistral`, `llama3.2:3b`, and `gemma4:e4b` — see `AVAILABLE_MODELS` in `server/freechat.js` — so this env var mostly just picks the initial one. |
 | `DB_PATH` | `data/sessions.json` | Where session/leaderboard data is stored |
 
 ### End of day: exporting & resetting

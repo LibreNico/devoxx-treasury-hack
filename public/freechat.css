@@ -107,6 +107,10 @@ header.top-bar {
   border-radius: 6px;
   cursor: pointer;
 }
+.fc-toolbar-buttons { display: flex; gap: 8px; }
+/* Presets and shortcut hints stay off-screen during the talk unless toggled on. */
+body:not(.fc-show-presets) .fc-presets,
+body:not(.fc-show-presets) .fc-shortcut { display: none; }
 .fc-reset:hover { color: var(--brand-red-dark); border-color: var(--brand-red); }
 .fc-hint { font-size: 12px; color: var(--muted); }
 .fc-hint kbd {
