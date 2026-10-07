@@ -82,10 +82,11 @@ Then pull the model the game uses by default:
 ollama pull llama3.2:3b
 ```
 
-If you'll also run the `/freechat.html` live-demo page (see [Live-talk extra](#live-talk-extra-ai-red-team-playground)), pull its second model too:
+If you'll also run the `/freechat.html` live-demo page (see [Live-talk extra](#live-talk-extra-ai-red-team-playground)), pull its other models too:
 
 ```bash
 ollama pull mistral
+ollama pull gemma4:e4b
 ```
 
 Check it's running:
@@ -115,7 +116,7 @@ npm run dev
 
 The game was built on macOS but runs the same way on Windows (it's plain Node.js + Ollama). A few helper scripts are included so a booth laptop can be set up and run without a terminal:
 
-- **`install-windows.bat`** (double-click, first time only) — installs Node.js, Git, and Ollama via `winget` if they're missing, pulls the `llama3.2:3b` and `mistral` models, and runs `npm install`. Git is installed so `update-windows.bat` can pull patches during the event.
+- **`install-windows.bat`** (double-click, first time only) — installs Node.js, Git, and Ollama via `winget` if they're missing, pulls the `llama3.2:3b`, `mistral`, and `gemma4:e4b` models, and runs `npm install`. Git is installed so `update-windows.bat` can pull patches during the event.
 - **`run-windows.bat`** (double-click each time) — makes sure Ollama is running, starts the game server, and opens `http://localhost:3000` in the default browser.
 - **`update-windows.bat`** (double-click, whenever there's a patch) — `git pull`s the latest changes and re-runs `npm install`. Refuses to run if the laptop has local edits, so it never clobbers something someone changed on-site.
 - **`reset-db-windows.bat`** (double-click, end of day) — same end-of-day wipe as `npm run reset-db`, with a typed `YES` confirmation and a reminder to export first (see [End of day](#end-of-day-exporting--resetting)).
@@ -129,7 +130,7 @@ If `winget` isn't available on the laptop, install [Node.js LTS](https://nodejs.
 | `PORT` | `3000` | Web server port |
 | `OLLAMA_URL` | `http://localhost:11434` | Where Ollama is listening |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Which pulled model the booth game uses |
-| `FREECHAT_MODEL` | `OLLAMA_MODEL`'s value | Default model for the `/freechat.html` live-demo page (independent of the booth game). The page also has a live in-UI switcher between `llama3.2:3b` and `mistral` — see `AVAILABLE_MODELS` in `server/freechat.js` — so this env var mostly just picks the initial one. |
+| `FREECHAT_MODEL` | `OLLAMA_MODEL`'s value | Default model for the `/freechat.html` live-demo page (independent of the booth game). The page also has a live in-UI switcher between `llama3.2:3b`, `mistral`, and `gemma4:e4b` — see `AVAILABLE_MODELS` in `server/freechat.js` — so this env var mostly just picks the initial one. |
 | `DB_PATH` | `data/sessions.json` | Where session/leaderboard data is stored |
 
 ### End of day: exporting & resetting

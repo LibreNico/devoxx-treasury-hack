@@ -8,9 +8,13 @@
 export const FREECHAT_MODEL = process.env.FREECHAT_MODEL || process.env.OLLAMA_MODEL || 'llama3.2:3b';
 
 // Models the presenter can flip between live, from the page itself, without a server
-// restart -- both must already be pulled locally (`ollama pull <name>`) for the switch
+// restart -- each must already be pulled locally (`ollama pull <name>`) for the switch
 // to work. Add more here if you pull additional models before the event.
-export const AVAILABLE_MODELS = ['llama3.2:3b', 'mistral'];
+// gemma4:e4b is Gemma 4's small "effective ~4B" edge tag (not the much bigger
+// `gemma4`/`gemma4:latest`, which defaults to the 12b tag). Note it's still a 6.6GB
+// download -- notably heavier than llama3.2:3b (2GB) and mistral (4.4GB) despite the
+// "4B" naming -- so budget extra pull time on a booth laptop before the event.
+export const AVAILABLE_MODELS = ['llama3.2:3b', 'mistral', 'gemma4:e4b'];
 
 // Only ever hands back one of AVAILABLE_MODELS (or the server default) -- so a client
 // can't make this endpoint call an arbitrary Ollama model name.

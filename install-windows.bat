@@ -84,7 +84,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: --- Pull the freechat live-demo model --------------------------------------
+:: --- Pull the freechat live-demo models --------------------------------------
 :: Only used by the standalone /freechat.html talk demo, not the booth game --
 :: but pulled here too so that page works out of the box wherever this runs.
 echo.
@@ -95,6 +95,16 @@ if %errorlevel% neq 0 (
     echo Failed to pull mistral. The booth game will still work fine --
     echo this is only needed for the /freechat.html live-demo page. Retry later
     echo with: ollama pull mistral
+)
+
+echo.
+echo Pulling live-demo model (gemma4:e4b) - this may take a few minutes...
+ollama pull gemma4:e4b
+if %errorlevel% neq 0 (
+    echo.
+    echo Failed to pull gemma4:e4b. The booth game will still work fine --
+    echo this is only needed for the /freechat.html live-demo page. Retry later
+    echo with: ollama pull gemma4:e4b
 )
 
 :: --- Project dependencies ---------------------------------------------------
